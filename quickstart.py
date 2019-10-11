@@ -22,10 +22,20 @@ This file contains a "Quick Start" example using pyATS / Genie.  User Story:
 
 Notes
 -----
-    If you want to disable console logging, you can change the logLevel on your device connection:
+    You can control the output logging:
 
+    A) When you connect to the device:
+        dev.connect(log_stdout=False)
+
+    *after* you have connected to the device using one of two methods:
+
+    B.1)
         import logging
         dev.connectionmgr.log.setLevel(logging.ERROR)
+
+    B.2)
+        dev.log_user(enable=False)  # disable a device logs on screen
+        dev.log_user(enable=True)  # enable a device logs on screen
 
 """
 import sys
