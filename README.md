@@ -1,6 +1,8 @@
 # genie-quickstart
 
-This file contains a "Quick Start" example using pyATS / Genie.  User Story:
+This file contains a "Quick Start" example using pyATS / Genie.  
+
+User Story:
 
     As a network engineer I want to quickly use genie to connect to a device and execute
     arbitrary commands either using the `execute()` method or the `parse()` method.
