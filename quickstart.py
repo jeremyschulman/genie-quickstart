@@ -28,16 +28,31 @@ Notes
         dev.connectionmgr.log.setLevel(logging.ERROR)
 
 """
+import sys
+import os
+
+import logging
 from genie.testbed import load
 from genie.conf.base.device import Device
 
 # load the testbed YAML file so that the tesetbed credential information is loaded
 # properly and can be used when creating the Device instances
 
-testbed = load("empty-testbed.yaml").testbed
+try:
+    assert all(os.environ[env] for env in ['PYATS_USERNAME', 'PYATS_PASSWORD'])
+except KeyError as exc:
+    sys.exit(f"ERROR: missing ENVAR: {exc}")
 
 
-def make_ssh_conn(hostname):
+testbed = load("empty-testbed.yaml")
+print(f"Genie loaded testbed: {testbed.name}")
+
+
+def disable_console_log(dev):
+    dev.connectionmgr.log.setLevel(logging.ERROR)
+
+
+def make_ssh_conn(hostname, testbed):
     """
     This function creates a connections dict used when creating a new Device
     instance.  The returned dict will only contain an SSH connection.  For more
@@ -53,10 +68,10 @@ def make_ssh_conn(hostname):
     -------
     dict
     """
-    return {'cli': dict(host=hostname,
-                        init_config_commands=[],
-                        init_exec_commands=[],
-                        protocol='ssh')}
+    return {'default': dict(host=hostname,
+                            arguments=dict(init_config_commands=[],
+                                           init_exec_commands=[]),
+                            protocol='ssh')}
 
 
 def add_device(hostname, os_type, testbed, device_type='switch', ip_addr=None):
@@ -79,7 +94,7 @@ def add_device(hostname, os_type, testbed, device_type='switch', ip_addr=None):
         The OS type of the device.  Must be one of the values listed on the docs website:
         https://pubhub.devnetcloud.com/media/pyats-getting-started/docs/quickstart/manageconnections.html#manage-connections
 
-    testbed : genie.libs.conf.testbed.Testbed
+    testbed : Testbed
         The testbed attributed from the loaded testbed file
 
     device_type : str
@@ -94,9 +109,11 @@ def add_device(hostname, os_type, testbed, device_type='switch', ip_addr=None):
     Device
         New device instance that you can then use to execute the `.connect()` method.
     """
-    return Device(hostname,
-                  os=os_type, type=device_type,
-                  custom={'abstraction': {'order': ['os']}},
-                  tacacs=testbed.tacacs,
-                  passwords=testbed.passwords,
-                  connections=make_ssh_conn(ip_addr or hostname))
+
+    dev = Device(hostname,
+                 os=os_type, type=device_type,
+                 custom={'abstraction': {'order': ['os']}},     # genie uses this to select parsers by os_type
+                 connections=make_ssh_conn(ip_addr or hostname, testbed))
+
+    testbed.add_device(dev)
+    return dev

@@ -1,11 +1,8 @@
 testbed:
 
-  tacacs:
+  credentials:
+    default:
       username: "%ENV{PYATS_USERNAME}"
-
-  passwords:
-      tacacs: "%ENV{PYATS_PASSWORD}"
-      enable: "%ENV{PYATS_PASSWORD}"
-      line: "%ENV{PYATS_PASSWORD}"
+      password: "%ENV{PYATS_PASSWORD}"
 
 devices:
