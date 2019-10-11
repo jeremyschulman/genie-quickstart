@@ -52,7 +52,7 @@ def disable_console_log(dev):
     dev.connectionmgr.log.setLevel(logging.ERROR)
 
 
-def make_ssh_conn(hostname, testbed):
+def make_ssh_conn(hostname):
     """
     This function creates a connections dict used when creating a new Device
     instance.  The returned dict will only contain an SSH connection.  For more
@@ -113,7 +113,7 @@ def add_device(hostname, os_type, testbed, device_type='switch', ip_addr=None):
     dev = Device(hostname,
                  os=os_type, type=device_type,
                  custom={'abstraction': {'order': ['os']}},     # genie uses this to select parsers by os_type
-                 connections=make_ssh_conn(ip_addr or hostname, testbed))
+                 connections=make_ssh_conn(ip_addr or hostname))
 
     testbed.add_device(dev)
     return dev
