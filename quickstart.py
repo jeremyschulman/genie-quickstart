@@ -20,10 +20,12 @@ This file contains a "Quick Start" example using pyATS / Genie.  User Story:
         data = dev.parse('show version')       # returns dict of parsed string
 
 
-See Also
---------
-    Controlling logging:
-    https://pubhub.devnetcloud.com/media/pyats/docs/log/implementation.html
+Notes
+-----
+    If you want to disable console logging, you can change the logLevel on your device connection:
+
+        import logging
+        dev.connectionmgr.log.setLevel(logging.ERROR)
 
 """
 from genie.testbed import load
