@@ -1,0 +1,11 @@
+testbed:
+
+  tacacs:
+      username: "%ENV{PYATS_USERNAME}"
+
+  passwords:
+      tacacs: "%ENV{PYATS_PASSWORD}"
+      enable: "%ENV{PYATS_PASSWORD}"
+      line: "%ENV{PYATS_PASSWORD}"
+
+devices:
