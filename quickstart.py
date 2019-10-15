@@ -40,8 +40,8 @@ Notes
 """
 import sys
 import os
-
 import logging
+
 from genie.testbed import load
 from genie.conf.base.device import Device
 
@@ -127,3 +127,4 @@ def add_device(hostname, os_type, testbed, device_type='switch', ip_addr=None):
 
     testbed.add_device(dev)
     return dev
+

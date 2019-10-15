@@ -9,6 +9,7 @@ https://developer.cisco.com/docs/genie-parsergen/
 """
 from genie import parsergen as pg
 
+
 MARKUP_show_interface_transceiver = """
 
 OS: NXOS
