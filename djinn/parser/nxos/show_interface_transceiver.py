@@ -16,12 +16,12 @@ ranges, for example:
       'vendor': 'CISCO-FINISAR',
       'type': 'Fabric',
       'part_number': 'FTLX8570D3BCL-C2',
-      'serial_number': 'FNS1947100T'},
+      'serial_number': 'FNS1947***'},
      'Ethernet1/2': {'exists': True,
       'vendor': 'CISCO-FINISAR',
       'type': 'Fabric',
       'part_number': 'FTLX8570D3BCL-C2',
-      'serial_number': 'FNS1947101K'}}
+      'serial_number': 'FNS1947***'}}
 
 This parser was developed using the genie parsergen "markup" capabilities.  Very nice!
 
@@ -58,12 +58,12 @@ class ShowInterfaceTransceiver(ShowInterfaceTransceiverSchema):
           'vendor': 'CISCO-FINISAR',
           'type': 'Fabric',
           'part_number': 'FTLX8570D3BCL-C2',
-          'serial_number': 'FNS1947100T'},
+          'serial_number': 'FNS194****'},
          'Ethernet1/2': {'exists': True,
           'vendor': 'CISCO-FINISAR',
           'type': 'Fabric',
           'part_number': 'FTLX8570D3BCL-C2',
-          'serial_number': 'FNS1947101K'}}
+          'serial_number': 'FNS1947****'}}
 
     """
     OS = 'nxos'
@@ -81,7 +81,7 @@ Ethernet2/2
     name is CISCO
     part number is FCBN410QE2C01-C1
     revision is D
-    serial number is ABC1950011G-B
+    serial number is ABC19500ABCD
     nominal bitrate is 10300 MBit/sec
     Link length supported for AOC is 1 m
     cisco id is --
@@ -94,7 +94,7 @@ XI<ifname>XEthernet2/2
     name is XS<vendor>XCISCO
     part number is XS<part_number>XFCBN410QE2C01-C1
     revision is D
-    serial number is XS<serial_number>XABCW1950011G-B
+    serial number is XS<serial_number>XABCW19500ABCD
     nominal bitrate is 10300 MBit/sec
     Link length supported for AOC is 1 m
     cisco id is --
