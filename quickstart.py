@@ -120,6 +120,12 @@ def add_device(hostname, os_type, testbed, device_type='switch', ip_addr=None):
         New device instance that you can then use to execute the `.connect()` method.
     """
 
+    # if the hostname already exists in the testbed, then remove it so that it
+    # can be re-added.
+
+    if hostname in testbed.devices:
+        del testbed.devices[hostname]
+
     dev = Device(hostname,
                  os=os_type, type=device_type,
                  custom={'abstraction': {'order': ['os']}},     # genie uses this to select parsers by os_type
