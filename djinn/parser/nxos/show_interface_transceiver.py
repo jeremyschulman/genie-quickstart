@@ -123,11 +123,13 @@ XI<ifname>XEthernet2/2
 
         cli_output = self.device.execute(cli_cmd)
 
-        # extract the interface names from the TEXT output so we know which
-        # specific interface we will parse using the parsergen.
+        # extract the list of regular-express match-objects, each starting at
+        # the interface name.  We use regex MO so that we can feed each
+        # interface block through the parsergen starting each with the
+        # interface name.
 
-        if_name_list = self.find_interface_names(cli_output)
-        if not if_name_list:
+        if_name_blocks = list(self.find_interface_blocks(cli_output))
+        if not if_name_blocks:
             # this results in: SchemaEmptyParserError: Parser Output is empty,
             # TODO: investigate the proper way to return empty data so
             #       an exception does not occur.
@@ -149,7 +151,8 @@ XI<ifname>XEthernet2/2
         # iterate through each interface found in the CLI TEXT output, running
         # for each through the parsergen system.
 
-        for if_name in if_name_list:
+        for if_block_mo in if_name_blocks:
+            if_name = if_block_mo.group(1)
             find_attrs['if-xcvr.ifname'] = if_name
 
             # the following call will create a parser that we can then invoke
@@ -158,35 +161,29 @@ XI<ifname>XEthernet2/2
             # parsergen.
 
             parser = pg.oper_fill(device_os=self.device.os,
-                                  device_output=cli_output,
+                                  device_output=cli_output[if_block_mo.start():],
                                   show_command=('SHOW_INTF_<NAME>_XCVRS', [], {
                                       'ifname': interface
                                   }),
                                   attrvalpairs=find_attrs.items(),
                                   refresh_cache=False)
 
+            # always create an entry for each interface, even if no transceiver
+            # exists.
+
+            schema_output[if_name] = if_schema_data = {}
+
             ok = parser.parse()
             if not ok:
-                # TODO: should probably log this error, need to investigate best practice
-                #       with the Cisco team.
                 continue
 
             # If the command was executed and parsed OK, we need to extract it
             # from the parser core data holder.  We use the key 'device_name'
-            # include we are using the device_output call above.  Otherwise,
-            # we would use the key=self.device.name
+            # include we are using the device_output call above.  Otherwise, we
+            # would use the key=self.device.name
 
             parsed_attrs = pg.ext_dictio['device_name']
-
-            # always create an entry for each interface, even if no transceiver
-            # exists.  In that case the 'exists' key is set to False and we
-            # continue to the next interface in the list to process.
-
-            schema_output[if_name] = if_schema_data = {
-                'exists':  parsed_attrs.get('if-xcvr.present', '') == 'present'
-            }
-
-            if not if_schema_data['exists']:
+            if not parsed_attrs.get('if-xcvr.present', '') == 'present':
                 continue
 
             # a transceiver exists, so copy the data out from parsergen into

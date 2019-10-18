@@ -13,7 +13,6 @@ class ShowInterfaceTransceiverSchema(MetaParser):
     """
     schema = {
         Any(): {
-            'exists': bool,
             Optional('vendor'): str,
             Optional('type'): str,
             Optional('part_number'): str,
@@ -21,4 +20,4 @@ class ShowInterfaceTransceiverSchema(MetaParser):
         }
     }
 
-    find_interface_names = re.compile(r"^(\S+)[\r]?$", re.M).findall
+    find_interface_blocks = re.compile(r"^(\S+)[\r]?$", re.M).finditer
