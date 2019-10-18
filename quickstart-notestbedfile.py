@@ -44,9 +44,8 @@ import sys
 import os
 import logging
 
-from genie.libs.conf.testbed import Testbed
-from pyats.topology.credentials import Credentials
 from pyats.topology import Testbed
+from pyats.topology.credentials import Credentials
 from genie.conf.base.device import Device
 
 
@@ -59,8 +58,10 @@ def ensure_environment():
 
 def make_testbed(name):
     testbed = Testbed(name)
-    testbed.credentials = Credentials({'default': {'username': os.environ['PYATS_USERNAME'],
-                                                   'password': os.environ['PYATS_PASSWORD']}})
+
+    testbed.credentials=Credentials(dict(default=dict(
+                     username=os.environ['PYATS_USERNAME'],
+                     password=os.environ['PYATS_PASSWORD'])))
 
     print(f"Created Genie testbed: {testbed.name}")
     return testbed
@@ -129,11 +130,6 @@ def connect_device(hostname, os_type, testbed, device_type='switch', ip_addr=Non
 
                  custom={'abstraction': {'order': ['os']}},
 
-                 # genie requires that we pass the credentials here since we
-                 # built the testbed programmatically.
-
-                 credentials=testbed.credentials,
-
                  # connect only using SSH, prevent genie from making config
                  # changes to the device during the login process.
 
@@ -142,12 +138,12 @@ def connect_device(hostname, os_type, testbed, device_type='switch', ip_addr=Non
                                                              init_exec_commands=[]),
                                               protocol='ssh')})
 
-    dev.connect(log_stdout=log_stdout)
     testbed.add_device(dev)
+    dev.connect(log_stdout=log_stdout)
 
     return dev
 
 
 if __name__ == "__main__":
     ensure_environment()
-    testbed = make_testbed(name='quickstart')
+    testbed = make_testbed(name='quickstart-notestbedfile')
