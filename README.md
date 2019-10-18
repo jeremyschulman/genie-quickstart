@@ -14,7 +14,7 @@ User Story:
 
 ```shell script
 export PYATS_USERNAME=<your-login-username>
-export PYATS_PASSWORD=<your-login-password
+export PYATS_PASSWORD=<your-login-password>
 ```    
 
 The [quickstart](quickstart.py) script will load the testbed file called *empty-testbed.yaml* for this purpose.    
