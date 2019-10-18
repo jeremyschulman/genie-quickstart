@@ -10,10 +10,10 @@ This file contains a "Quick Start" example using pyATS / Genie.  User Story:
         export PYATS_USERNAME=<your-login-username>
         export PYATS_PASSWORD=<your-login-password>
 
-    You can then create specific instances of any device:
+    You can then create specific instances of any device, connect, and return
+    the Device instance:
 
-        dev = add_device("switch1", "nxos", testbed)
-        dev.connect()
+        dev = connect_device("switch1", "nxos", testbed)
         text = dev.execute('show version')     # returns the string
         data = dev.parse('show version')       # returns dict of parsed string
 
