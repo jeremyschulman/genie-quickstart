@@ -12,12 +12,12 @@ ranges, for example:
 
     In [3]: dev.parse('show interface Ethernet1/1 - 2 transceiver')
     Out[3]:
-    {'Ethernet1/1': {'exists': True,
+    {'Ethernet1/1': {
       'vendor': 'CISCO-FINISAR',
       'type': 'Fabric',
       'part_number': 'FTLX8570D3BCL-C2',
       'serial_number': 'FNS1947***'},
-     'Ethernet1/2': {'exists': True,
+     'Ethernet1/2': {
       'vendor': 'CISCO-FINISAR',
       'type': 'Fabric',
       'part_number': 'FTLX8570D3BCL-C2',
@@ -54,18 +54,23 @@ class ShowInterfaceTransceiver(ShowInterfaceTransceiverSchema):
 
         In [3]: dev.parse('show interface Ethernet1/1 - 2 transceiver')
         Out[3]:
-        {'Ethernet1/1': {'exists': True,
+        {'Ethernet1/1': {
           'vendor': 'CISCO-FINISAR',
           'type': 'Fabric',
           'part_number': 'FTLX8570D3BCL-C2',
           'serial_number': 'FNS194****'},
-         'Ethernet1/2': {'exists': True,
+         'Ethernet1/2': {
           'vendor': 'CISCO-FINISAR',
           'type': 'Fabric',
           'part_number': 'FTLX8570D3BCL-C2',
           'serial_number': 'FNS1947****'}}
 
     """
+    cli_command = [
+        'show interface transceiver',
+        'show interface {interface} transceiver'
+    ]
+
     OS = 'nxos'
     MARKUP_PREFIX = 'if-xcvr'
     MARKUP_CONTENT = """
@@ -105,21 +110,16 @@ XI<ifname>XEthernet2/2
 
     pg.extend_markup(MARKUP_CONTENT)
 
-    cli_command = [
-        'show interface transceiver',
-        'show interface {interface} transceiver'
-    ]
-
     def cli(self, interface=None, output=None, **kwargs):
-
-        cli_cmd = (self.cli_command[0] if not interface
-                   else self.cli_command[1].format(interface=interface))
 
         # run the command to obtain the TEXT output so that we can then run it
         # through the parsergen.  We do this because if the caller does not
         # provide an interface, or the provided interface is a range, we will
         # need to parse the same output multiple times; once for each interface
         # found in the output.
+
+        cli_cmd = (self.cli_command[0] if not interface
+                   else self.cli_command[1].format(interface=interface))
 
         cli_output = self.device.execute(cli_cmd)
 
@@ -153,7 +153,7 @@ XI<ifname>XEthernet2/2
 
         for if_block_mo in if_name_blocks:
             if_name = if_block_mo.group(1)
-            find_attrs['if-xcvr.ifname'] = if_name
+            find_attrs[f'{self.MARKUP_PREFIX}.ifname'] = if_name
 
             # the following call will create a parser that we can then invoke
             # notice that we use the device_os and device_output params here to
@@ -183,16 +183,17 @@ XI<ifname>XEthernet2/2
             # would use the key=self.device.name
 
             parsed_attrs = pg.ext_dictio['device_name']
-            if not parsed_attrs.get('if-xcvr.present', '') == 'present':
+            exists = parsed_attrs.get(f'{self.MARKUP_PREFIX}.present', '') == 'present'
+            if not exists:
                 continue
 
             # a transceiver exists, so copy the data out from parsergen into
-            # the return dictionary variable.
+            # the return schema dictionary variable.
 
-            if_schema_data['vendor'] = parsed_attrs['if-xcvr.vendor']
-            if_schema_data['type'] = parsed_attrs['if-xcvr.type']
-            if_schema_data['part_number'] = parsed_attrs['if-xcvr.part_number']
-            if_schema_data['serial_number'] = parsed_attrs['if-xcvr.serial_number']
+            if_schema_data['vendor'] = parsed_attrs[f'{self.MARKUP_PREFIX}.vendor']
+            if_schema_data['type'] = parsed_attrs[f'{self.MARKUP_PREFIX}.type']
+            if_schema_data['part_number'] = parsed_attrs[f'{self.MARKUP_PREFIX}.part_number']
+            if_schema_data['serial_number'] = parsed_attrs[f'{self.MARKUP_PREFIX}.serial_number']
 
         return schema_output
 
